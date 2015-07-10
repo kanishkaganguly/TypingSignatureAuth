@@ -135,59 +135,67 @@ public class main extends javax.swing.JFrame {
     }//GEN-LAST:event_start_btnMouseClicked
 
     private void type_hereKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_type_hereKeyReleased
+        //GIVE FOCUS TO TYPING AREA
         type_here.grabFocus();
 
+        //START TIMER WHEN STARTS TYPING
         if (started == false && type_here.getText() == null) {
             started = true;
             start_time = System.nanoTime();
             spaceStart_time = System.nanoTime();
         }
 
+        //GET CURRENT TEXT TYPED
         String current_text = type_here.getText();
 
+        //IF spacebar TYPED
         if (evt.getKeyChar() == KeyEvent.VK_SPACE) {
-            spaceEnd_time = System.nanoTime();
-            space_time(spaceStart_time, spaceEnd_time);
-            spaceStart_time = 0;
-            spaceEnd_time = 0;
-            space_counter++;
+            spaceEnd_time = System.nanoTime(); //GET time_elapsed
+            space_time(spaceStart_time, spaceEnd_time); //STORE + DISPLAY time_elapsed
+            spaceStart_time = 0; //RESET spacebar_startTime
+            spaceEnd_time = 0; //RESET spacebar_endTime
+            space_counter++; //UPDATE spacebar_counter
         }
 
+        //IF ENTIRE TEXT TYPED
         if (current_text.equals(test_text.getText())) {
-            total_time(start_time, end_time);
-            type_here.setText("");
-            end_time = System.nanoTime();
-            started = false;
-            counter += 1;
-            update_progress(counter);
-            spaceStart_time = 0;
-            spaceEnd_time = 0;
+            type_here.setText(null); //CLEAR TYPING AREA
+            end_time = System.nanoTime(); //GET total_time
+            total_time(start_time, end_time); //STORE total_time
+            started = false; //RESET start_var
+            counter += 1; //UPDATE progress_counter
+            update_progress(counter); //UPDATE progress_bar
         }
 
+        //IF TRAINING FINISHED
         if (counter == 10) {
-            update_progress(counter);
-            type_here.setEnabled(false);
-            start_btn.setEnabled(true);
+            update_progress(counter); //UPDATE progress_bar
+            type_here.setEnabled(false); //DISABLE typing_area
+            start_btn.setEnabled(true); 
         }
     }//GEN-LAST:event_type_hereKeyReleased
 
+    //DISPLAY spacebar_time AND STORE
     public void space_time(long start, long end) {
         space_time.setText("Time Between Words: " + ((end - start) / 1000000000) + " s");
         space_time_store[space_counter] = ((end - start) / 1000000000);
         print_time();
     }
 
+    //DISPLAY total_time AND STORE
     public void total_time(long start, long end) {
         total_time.setText("Total Time Taken: " + ((end - start) / 1000000000) + " s");
         total_time_store[counter] = ((end - start) / 1000000000);
         print_time();
     }
 
+    //UPDATE progress_bar
     public void update_progress(int n) {
         progress.setValue(n);
         progress.setString("Trained: " + n + "/10");
     }
 
+    //COUNT SPACES IN TEXT
     public int count_space(String str) {
         int count = 0;
         for (int i = 0; i < str.length(); i++) {
@@ -198,6 +206,7 @@ public class main extends javax.swing.JFrame {
         return count;
     }
 
+    //PRINT TIME STORED
     public void print_time() {
         for (int x = 0; x < total_time_store.length; x++) {
             System.out.print(total_time_store[x] + " ");
