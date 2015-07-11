@@ -19,9 +19,10 @@ public class main extends javax.swing.JFrame {
     long spaceEnd_time = 0;
     int counter = 0;
     long total_time_store[] = new long[10];
-    long space_time_store[];
+    long space_time_store[][];
     int spaces = 0;
     int space_counter = 0;
+    static int TRAINING_COUNT = 10;
 
     /**
      * Creates new form main
@@ -131,7 +132,7 @@ public class main extends javax.swing.JFrame {
         type_here.setEnabled(true);
         start_btn.setEnabled(false);
         spaces = count_space(test_text.getText());
-        space_time_store = new long[spaces];
+        space_time_store = new long[TRAINING_COUNT][spaces];
     }//GEN-LAST:event_start_btnMouseClicked
 
     private void type_hereKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_type_hereKeyReleased
@@ -143,6 +144,8 @@ public class main extends javax.swing.JFrame {
             started = true;
             start_time = System.nanoTime();
             spaceStart_time = System.nanoTime();
+            System.out.println("START TIMER");
+            System.out.println("START SPACEBAR TIMER");
         }
 
         //GET CURRENT TEXT TYPED
@@ -155,6 +158,7 @@ public class main extends javax.swing.JFrame {
             spaceStart_time = 0; //RESET spacebar_startTime
             spaceEnd_time = 0; //RESET spacebar_endTime
             space_counter++; //UPDATE spacebar_counter
+            System.out.println("END SPACE TIMER");
         }
 
         //IF ENTIRE TEXT TYPED
@@ -165,21 +169,29 @@ public class main extends javax.swing.JFrame {
             started = false; //RESET start_var
             counter += 1; //UPDATE progress_counter
             update_progress(counter); //UPDATE progress_bar
+            System.out.println("END TIMER");
+            spaceStart_time = 0; //RESET spacebar_startTime
+            spaceEnd_time = 0; //RESET spacebar_endTime
+            start_time = 0;
+            end_time = 0;
+            space_counter = 0;
         }
 
         //IF TRAINING FINISHED
-        if (counter == 10) {
+        if (counter == TRAINING_COUNT) {
             update_progress(counter); //UPDATE progress_bar
             type_here.setEnabled(false); //DISABLE typing_area
-            start_btn.setEnabled(true); 
+            start_btn.setEnabled(true);
+            System.out.println("END TRAINING");
+            space_counter = 0;
         }
     }//GEN-LAST:event_type_hereKeyReleased
 
     //DISPLAY spacebar_time AND STORE
     public void space_time(long start, long end) {
         space_time.setText("Time Between Words: " + ((end - start) / 1000000000) + " s");
-        space_time_store[space_counter] = ((end - start) / 1000000000);
-        print_time();
+        space_time_store[counter][space_counter] = ((end - start) / 1000000000);
+        print_spaceTime();
     }
 
     //DISPLAY total_time AND STORE
@@ -208,12 +220,21 @@ public class main extends javax.swing.JFrame {
 
     //PRINT TIME STORED
     public void print_time() {
+        System.out.println("TIME");
         for (int x = 0; x < total_time_store.length; x++) {
             System.out.print(total_time_store[x] + " ");
         }
-        System.out.println();
-        for (int x = 0; x < space_time_store.length; x++) {
-            System.out.print(space_time_store[x] + " ");
+        System.out.println("\n");
+    }
+
+    //PRINT spacebar TIME STORED
+    public void print_spaceTime() {
+        System.out.println("SPACEBAR TIME");
+        for (int x = 0; x < TRAINING_COUNT; x++) {
+            for (int y = 0; y < spaces; y++) {
+                System.out.print(space_time_store[x][y] + " ");
+            }
+            System.out.println();
         }
         System.out.println("\n");
     }
