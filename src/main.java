@@ -2,7 +2,6 @@
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.LinkedList;
-import javax.swing.UIManager;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -138,11 +137,13 @@ public class main extends javax.swing.JFrame {
 
         //START TIMER WHEN STARTS TYPING
         if (started == false && type_here.getText() == null) {
-            started = true;
-            start_time = System.nanoTime();
-            spaceStart_time = System.nanoTime();
+            System.out.println(started);
             System.out.println("START TIMER");
             System.out.println("START SPACE TIMER");
+            started = true;
+            start_time = System.currentTimeMillis();
+            spaceStart_time = System.currentTimeMillis();
+            System.out.println(started);
         }
     }//GEN-LAST:event_start_btnMouseClicked
 
@@ -153,22 +154,13 @@ public class main extends javax.swing.JFrame {
         //GET CURRENT TEXT TYPED
         String current_text = type_here.getText();
 
-        /*
-         //START TIMER WHEN STARTS TYPING
-         if (started == false && type_here.getText() == null) {
-         started = true;
-         start_time = System.nanoTime();
-         spaceStart_time = System.nanoTime();
-         System.out.println("START TIMER");
-         System.out.println("START SPACE TIMER");
-         }*/
         if (test_text.getText().contains(current_text)) {
             //SET NORMAL COLOR            
             type_here.setBackground(Color.WHITE);
 
             //IF spacebar TYPED
             if (evt.getKeyChar() == KeyEvent.VK_SPACE) {
-                spaceEnd_time = System.nanoTime(); //GET time_elapsed
+                spaceEnd_time = System.currentTimeMillis(); //GET time_elapsed
                 space_time(spaceStart_time, spaceEnd_time); //STORE + DISPLAY time_elapsed
                 spaceStart_time = 0; //RESET spacebar_startTime
                 spaceEnd_time = 0; //RESET spacebar_endTime
@@ -178,12 +170,12 @@ public class main extends javax.swing.JFrame {
             //IF ENTIRE TEXT TYPED
             if (current_text.equals(test_text.getText())) {
                 type_here.setText(null); //CLEAR TYPING AREA
-                end_time = System.nanoTime(); //GET total_time
+                end_time = System.currentTimeMillis(); //GET total_time
                 total_time(start_time, end_time); //STORE total_time
                 started = false; //RESET start_var
                 counter += 1; //UPDATE progress_counter
                 update_progress(counter); //UPDATE progress_bar
-                System.out.println("END TIMER");
+                System.out.println("END LOOP");
                 spaceStart_time = 0; //RESET spacebar_startTime
                 spaceEnd_time = 0; //RESET spacebar_endTime
                 start_time = 0; //RESET total_startTime
@@ -198,22 +190,24 @@ public class main extends javax.swing.JFrame {
                 System.out.println("END TRAINING");
             }
         } else {
+            //SHOW ERROR
             type_here.setBackground(Color.red);
-            //UIManager.put("type_here.focus", Color.red);
         }
     }//GEN-LAST:event_type_hereKeyReleased
 
     //DISPLAY spacebar_time AND STORE
     public void space_time(long start, long end) {
-        space_time.setText("Time Between Words: " + ((end - start) / 1000000000) + " s");
-        space_time_store.push(((end - start) / 1000000000));
+        long time = (end - start) / 1000;
+        space_time.setText("Time Between Words: " + time + " s");
+        space_time_store.push(time);
         print_spaceTime();
     }
 
     //DISPLAY total_time AND STORE
     public void total_time(long start, long end) {
-        total_time.setText("Total Time Taken: " + ((end - start) / 1000000000) + " s");
-        total_time_store.push(((end - start) / 1000000000));
+        long time = (end - start) / 1000;
+        total_time.setText("Total Time Taken: " + time + " s");
+        total_time_store.push(time);
         print_time();
     }
 
@@ -240,7 +234,7 @@ public class main extends javax.swing.JFrame {
         for (Long total_time_store1 : total_time_store) {
             System.out.print(total_time_store1 + " ");
         }
-        System.out.println("\n");
+        System.out.println("");
     }
 
     //PRINT spacebar TIME STORED
@@ -249,6 +243,7 @@ public class main extends javax.swing.JFrame {
         for (Long space_time_store1 : space_time_store) {
             System.out.print(space_time_store1 + " ");
         }
+        System.out.println("");
     }
 
     /**
