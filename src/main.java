@@ -1,5 +1,8 @@
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.LinkedList;
+import javax.swing.UIManager;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,10 +21,9 @@ public class main extends javax.swing.JFrame {
     long spaceStart_time = 0;
     long spaceEnd_time = 0;
     int counter = 0;
-    long total_time_store[] = new long[10];
-    long space_time_store[][];
+    LinkedList<Long> total_time_store = new LinkedList<>();
+    LinkedList<Long> space_time_store = new LinkedList<>();
     int spaces = 0;
-    int space_counter = 0;
     static int TRAINING_COUNT = 10;
 
     /**
@@ -132,12 +134,7 @@ public class main extends javax.swing.JFrame {
         type_here.setEnabled(true);
         start_btn.setEnabled(false);
         spaces = count_space(test_text.getText());
-        space_time_store = new long[TRAINING_COUNT][spaces];
-    }//GEN-LAST:event_start_btnMouseClicked
-
-    private void type_hereKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_type_hereKeyReleased
-        //GIVE FOCUS TO TYPING AREA
-        type_here.grabFocus();
+        started = false;
 
         //START TIMER WHEN STARTS TYPING
         if (started == false && type_here.getText() == null) {
@@ -145,59 +142,78 @@ public class main extends javax.swing.JFrame {
             start_time = System.nanoTime();
             spaceStart_time = System.nanoTime();
             System.out.println("START TIMER");
-            System.out.println("START SPACEBAR TIMER");
+            System.out.println("START SPACE TIMER");
         }
+    }//GEN-LAST:event_start_btnMouseClicked
+
+    private void type_hereKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_type_hereKeyReleased
+        //GIVE FOCUS TO TYPING AREA
+        type_here.grabFocus();
 
         //GET CURRENT TEXT TYPED
         String current_text = type_here.getText();
 
-        //IF spacebar TYPED
-        if (evt.getKeyChar() == KeyEvent.VK_SPACE) {
-            spaceEnd_time = System.nanoTime(); //GET time_elapsed
-            space_time(spaceStart_time, spaceEnd_time); //STORE + DISPLAY time_elapsed
-            spaceStart_time = 0; //RESET spacebar_startTime
-            spaceEnd_time = 0; //RESET spacebar_endTime
-            space_counter++; //UPDATE spacebar_counter
-            System.out.println("END SPACE TIMER");
-        }
+        /*
+         //START TIMER WHEN STARTS TYPING
+         if (started == false && type_here.getText() == null) {
+         started = true;
+         start_time = System.nanoTime();
+         spaceStart_time = System.nanoTime();
+         System.out.println("START TIMER");
+         System.out.println("START SPACE TIMER");
+         }*/
+        if (test_text.getText().contains(current_text)) {
+            //SET NORMAL COLOR            
+            type_here.setBackground(Color.WHITE);
 
-        //IF ENTIRE TEXT TYPED
-        if (current_text.equals(test_text.getText())) {
-            type_here.setText(null); //CLEAR TYPING AREA
-            end_time = System.nanoTime(); //GET total_time
-            total_time(start_time, end_time); //STORE total_time
-            started = false; //RESET start_var
-            counter += 1; //UPDATE progress_counter
-            update_progress(counter); //UPDATE progress_bar
-            System.out.println("END TIMER");
-            spaceStart_time = 0; //RESET spacebar_startTime
-            spaceEnd_time = 0; //RESET spacebar_endTime
-            start_time = 0;
-            end_time = 0;
-            space_counter = 0;
-        }
+            //IF spacebar TYPED
+            if (evt.getKeyChar() == KeyEvent.VK_SPACE) {
+                spaceEnd_time = System.nanoTime(); //GET time_elapsed
+                space_time(spaceStart_time, spaceEnd_time); //STORE + DISPLAY time_elapsed
+                spaceStart_time = 0; //RESET spacebar_startTime
+                spaceEnd_time = 0; //RESET spacebar_endTime
+                System.out.println("END SPACE TIMER");
+            }
 
-        //IF TRAINING FINISHED
-        if (counter == TRAINING_COUNT) {
-            update_progress(counter); //UPDATE progress_bar
-            type_here.setEnabled(false); //DISABLE typing_area
-            start_btn.setEnabled(true);
-            System.out.println("END TRAINING");
-            space_counter = 0;
+            //IF ENTIRE TEXT TYPED
+            if (current_text.equals(test_text.getText())) {
+                type_here.setText(null); //CLEAR TYPING AREA
+                end_time = System.nanoTime(); //GET total_time
+                total_time(start_time, end_time); //STORE total_time
+                started = false; //RESET start_var
+                counter += 1; //UPDATE progress_counter
+                update_progress(counter); //UPDATE progress_bar
+                System.out.println("END TIMER");
+                spaceStart_time = 0; //RESET spacebar_startTime
+                spaceEnd_time = 0; //RESET spacebar_endTime
+                start_time = 0; //RESET total_startTime
+                end_time = 0; //RESET total_endTime
+            }
+
+            //IF TRAINING FINISHED
+            if (counter == TRAINING_COUNT) {
+                update_progress(counter); //UPDATE progress_bar
+                type_here.setEnabled(false); //DISABLE typing_area
+                start_btn.setEnabled(true);
+                System.out.println("END TRAINING");
+            }
+        } else {
+            type_here.setBackground(Color.red);
+            //UIManager.put("type_here.focus", Color.red);
         }
     }//GEN-LAST:event_type_hereKeyReleased
 
     //DISPLAY spacebar_time AND STORE
     public void space_time(long start, long end) {
         space_time.setText("Time Between Words: " + ((end - start) / 1000000000) + " s");
-        space_time_store[counter][space_counter] = ((end - start) / 1000000000);
+        space_time_store.push(((end - start) / 1000000000));
         print_spaceTime();
     }
 
     //DISPLAY total_time AND STORE
     public void total_time(long start, long end) {
         total_time.setText("Total Time Taken: " + ((end - start) / 1000000000) + " s");
-        total_time_store[counter] = ((end - start) / 1000000000);
+        total_time_store.push(((end - start) / 1000000000));
         print_time();
     }
 
@@ -220,23 +236,19 @@ public class main extends javax.swing.JFrame {
 
     //PRINT TIME STORED
     public void print_time() {
-        System.out.println("TIME");
-        for (int x = 0; x < total_time_store.length; x++) {
-            System.out.print(total_time_store[x] + " ");
+        System.out.println("** TIME **");
+        for (Long total_time_store1 : total_time_store) {
+            System.out.print(total_time_store1 + " ");
         }
         System.out.println("\n");
     }
 
     //PRINT spacebar TIME STORED
     public void print_spaceTime() {
-        System.out.println("SPACEBAR TIME");
-        for (int x = 0; x < TRAINING_COUNT; x++) {
-            for (int y = 0; y < spaces; y++) {
-                System.out.print(space_time_store[x][y] + " ");
-            }
-            System.out.println();
+        System.out.println("-- SPACEBAR TIME --");
+        for (Long space_time_store1 : space_time_store) {
+            System.out.print(space_time_store1 + " ");
         }
-        System.out.println("\n");
     }
 
     /**
