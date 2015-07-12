@@ -19,10 +19,12 @@ public class main extends javax.swing.JFrame {
     long end_time = 0;
     long spaceStart_time = 0;
     long spaceEnd_time = 0;
+    long keyStart_time = 0;
+    long keyEnd_time = 0;
     int counter = 0;
     LinkedList<Long> total_time_store = new LinkedList<>();
     LinkedList<Long> space_time_store = new LinkedList<>();
-    int spaces = 0;
+    LinkedList<Long> key_time_store = new LinkedList<>();
     static int TRAINING_COUNT = 10;
 
     /**
@@ -49,6 +51,7 @@ public class main extends javax.swing.JFrame {
         start_btn = new javax.swing.JButton();
         progress = new javax.swing.JProgressBar();
         space_time = new javax.swing.JLabel();
+        key_time = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,12 +66,15 @@ public class main extends javax.swing.JFrame {
 
         type_here.setEnabled(false);
         type_here.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                type_hereKeyPressed(evt);
+            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 type_hereKeyReleased(evt);
             }
         });
 
-        total_time.setText("Total Time Taken: ");
+        total_time.setText("Average Time Taken: ");
 
         start_btn.setText("Begin Training");
         start_btn.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -80,7 +86,9 @@ public class main extends javax.swing.JFrame {
         progress.setString("Trained: 0/10");
         progress.setStringPainted(true);
 
-        space_time.setText("Time Between Words:");
+        space_time.setText("Average Time Between Words:");
+
+        key_time.setText("Average Keypress Time:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -96,7 +104,10 @@ public class main extends javax.swing.JFrame {
                     .addComponent(total_time, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(progress, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(start_btn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(space_time, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(space_time, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(key_time, javax.swing.GroupLayout.PREFERRED_SIZE, 366, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -114,7 +125,9 @@ public class main extends javax.swing.JFrame {
                 .addComponent(total_time)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(space_time)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(key_time)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(start_btn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(progress, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -132,19 +145,7 @@ public class main extends javax.swing.JFrame {
         progress.setString("Trained: 0/10");
         type_here.setEnabled(true);
         start_btn.setEnabled(false);
-        spaces = count_space(test_text.getText());
         started = false;
-
-        //START TIMER WHEN STARTS TYPING
-        if (started == false && type_here.getText() == null) {
-            System.out.println(started);
-            System.out.println("START TIMER");
-            System.out.println("START SPACE TIMER");
-            started = true;
-            start_time = System.currentTimeMillis();
-            spaceStart_time = System.currentTimeMillis();
-            System.out.println(started);
-        }
     }//GEN-LAST:event_start_btnMouseClicked
 
     private void type_hereKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_type_hereKeyReleased
@@ -154,22 +155,19 @@ public class main extends javax.swing.JFrame {
         //GET CURRENT TEXT TYPED
         String current_text = type_here.getText();
 
+        //CHECK IF TEXT IS CORRECT
         if (test_text.getText().contains(current_text)) {
+
+            //GET + STORE keypress_time 
+            keyEnd_time = System.currentTimeMillis();
+            key_time(keyStart_time, keyEnd_time);
+
             //SET NORMAL COLOR            
             type_here.setBackground(Color.WHITE);
 
-            //IF spacebar TYPED
-            if (evt.getKeyChar() == KeyEvent.VK_SPACE) {
-                spaceEnd_time = System.currentTimeMillis(); //GET time_elapsed
-                space_time(spaceStart_time, spaceEnd_time); //STORE + DISPLAY time_elapsed
-                spaceStart_time = 0; //RESET spacebar_startTime
-                spaceEnd_time = 0; //RESET spacebar_endTime
-                System.out.println("END SPACE TIMER");
-            }
-
             //IF ENTIRE TEXT TYPED
             if (current_text.equals(test_text.getText())) {
-                type_here.setText(null); //CLEAR TYPING AREA
+                type_here.setText(""); //CLEAR TYPING AREA
                 end_time = System.currentTimeMillis(); //GET total_time
                 total_time(start_time, end_time); //STORE total_time
                 started = false; //RESET start_var
@@ -195,10 +193,43 @@ public class main extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_type_hereKeyReleased
 
+    private void type_hereKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_type_hereKeyPressed
+        //RESET AND START keypress_time
+        keyStart_time = 0;
+        keyEnd_time = 0;
+        keyStart_time = System.currentTimeMillis();
+
+        //START TIMER WHEN STARTS TYPING
+        if ("".equals(type_here.getText()) && false == started) {
+            System.out.println("START TIMER");
+            System.out.println("START SPACE TIMER");
+            started = true;
+            start_time = System.currentTimeMillis();
+            spaceStart_time = System.currentTimeMillis();
+        }
+
+        //IF spacebar TYPED
+        if (evt.getKeyChar() == KeyEvent.VK_SPACE) {
+            spaceEnd_time = System.currentTimeMillis(); //GET time_elapsed
+            System.out.println("END SPACE TIMER");
+            space_time(spaceStart_time, spaceEnd_time); //STORE + DISPLAY time_elapsed
+            spaceStart_time = 0; //RESET spacebar_startTime
+            spaceEnd_time = 0; //RESET spacebar_endTime
+            System.out.println("START SPACE TIMER");
+            spaceStart_time = System.currentTimeMillis(); //START space_time
+        }
+    }//GEN-LAST:event_type_hereKeyPressed
+
+    //DISPLAY spacebar_time AND STORE
+    public void key_time(long start, long end) {
+        long time = (end - start);
+        key_time_store.push(time);
+        print_keyTime();
+    }
+
     //DISPLAY spacebar_time AND STORE
     public void space_time(long start, long end) {
-        long time = (end - start) / 1000;
-        space_time.setText("Time Between Words: " + time + " s");
+        long time = (end - start);
         space_time_store.push(time);
         print_spaceTime();
     }
@@ -206,7 +237,6 @@ public class main extends javax.swing.JFrame {
     //DISPLAY total_time AND STORE
     public void total_time(long start, long end) {
         long time = (end - start) / 1000;
-        total_time.setText("Total Time Taken: " + time + " s");
         total_time_store.push(time);
         print_time();
     }
@@ -217,32 +247,45 @@ public class main extends javax.swing.JFrame {
         progress.setString("Trained: " + n + "/10");
     }
 
-    //COUNT SPACES IN TEXT
-    public int count_space(String str) {
-        int count = 0;
-        for (int i = 0; i < str.length(); i++) {
-            if (Character.isWhitespace(str.charAt(i))) {
-                count++;
-            }
+    //PRINT TIME STORED
+    public void print_time() {
+        long sum = 0;
+        long avg = 0;
+        System.out.println("** AVG. TIME **");
+        for (int x = 0; x < total_time_store.size(); x++) {
+            sum += total_time_store.get(x);
         }
-        return count;
+        avg = sum / total_time_store.size();
+        total_time.setText("Average Time Taken: " + avg + " s");
+        System.out.println("Average Time Taken: " + avg + " s");
+        System.out.println("");
     }
 
     //PRINT TIME STORED
-    public void print_time() {
-        System.out.println("** TIME **");
-        for (Long total_time_store1 : total_time_store) {
-            System.out.print(total_time_store1 + " ");
+    public void print_keyTime() {
+        long sum = 0;
+        long avg = 0;
+        System.out.println("== AVG. KEY TIME ==");
+        for (int x = 0; x < key_time_store.size(); x++) {
+            sum += key_time_store.get(x);
         }
+        avg = sum / key_time_store.size();
+        key_time.setText("Average Keypress Time: " + avg + " ms");
+        System.out.println("Average Keypress Time: " + avg + " ms");
         System.out.println("");
     }
 
     //PRINT spacebar TIME STORED
     public void print_spaceTime() {
+        long sum = 0;
+        long avg = 0;
         System.out.println("-- SPACEBAR TIME --");
-        for (Long space_time_store1 : space_time_store) {
-            System.out.print(space_time_store1 + " ");
+        for (int x = 0; x < space_time_store.size(); x++) {
+            sum += space_time_store.get(x);
         }
+        avg = sum / space_time_store.size();
+        space_time.setText("Average Spacebar Time: " + avg + " ms");
+        System.out.println("Average Spacebar Time: " + avg + " ms");
         System.out.println("");
     }
 
@@ -283,6 +326,7 @@ public class main extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSeparator border;
+    private javax.swing.JLabel key_time;
     private javax.swing.JProgressBar progress;
     private javax.swing.JLabel space_time;
     private javax.swing.JButton start_btn;

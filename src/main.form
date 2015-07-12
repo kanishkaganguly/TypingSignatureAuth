@@ -34,6 +34,10 @@
                   <Component id="progress" alignment="0" max="32767" attributes="0"/>
                   <Component id="start_btn" alignment="0" max="32767" attributes="0"/>
                   <Component id="space_time" alignment="0" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="key_time" min="-2" pref="366" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -54,7 +58,9 @@
               <Component id="total_time" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="space_time" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="key_time" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="32767" attributes="0"/>
               <Component id="start_btn" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="progress" min="-2" pref="26" max="-2" attributes="0"/>
@@ -94,12 +100,13 @@
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="type_hereKeyPressed"/>
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="type_hereKeyReleased"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="total_time">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Total Time Taken: "/>
+        <Property name="text" type="java.lang.String" value="Average Time Taken: "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="start_btn">
@@ -118,7 +125,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="space_time">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Time Between Words:"/>
+        <Property name="text" type="java.lang.String" value="Average Time Between Words:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="key_time">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Average Keypress Time:"/>
       </Properties>
     </Component>
   </SubComponents>
