@@ -428,7 +428,7 @@ public class Signature_Authenticator extends javax.swing.JFrame {
         auth_type.grabFocus();
 
         //GET CURRENT TEXT TYPED
-        String current_text = auth_text.getText();
+        String current_text = auth_type.getText();
 
         //CHECK IF TEXT IS CORRECT
         if (auth_text.getText().contains(current_text)) {
@@ -455,13 +455,13 @@ public class Signature_Authenticator extends javax.swing.JFrame {
                 auth_end_time = 0; //RESET total_endTime
             }
 
-            //IF TRAINING FINISHED
+            //IF AUTHENTICATION FINISHED
             if (auth_counter == AUTH_COUNT) {
                 auth_update_progress(auth_counter); //UPDATE progress_bar
                 auth_type.setEnabled(false); //DISABLE typing_area
                 auth_start.setEnabled(true);
                 System.out.println("END AUTHENTICATION");
-                if ((Math.abs(train_total - auth_total) <= THRESHOLD) && (Math.abs(train_space - auth_space) < THRESHOLD) && (Math.abs(train_key - auth_key) < THRESHOLD)) {
+                if ((Math.abs(train_total - auth_total) <= THRESHOLD) && (Math.abs(train_space - auth_space) <= THRESHOLD) && (Math.abs(train_key - auth_key) <= THRESHOLD)) {
                     authenticated = true;
                     auth_alert.setForeground(Color.GREEN);
                     auth_alert.setText("You Have Been Authenticated");
@@ -577,7 +577,7 @@ public class Signature_Authenticator extends javax.swing.JFrame {
     //UPDATE progress_bar
     public void auth_update_progress(int n) {
         auth_progress.setValue(n);
-        auth_progress.setString("Trial: " + n + "/10");
+        auth_progress.setString("Trial: " + n + "/2");
     }
 
     //PRINT TIME STORED
