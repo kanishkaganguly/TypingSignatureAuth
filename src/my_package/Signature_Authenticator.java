@@ -22,7 +22,9 @@ public class Signature_Authenticator extends javax.swing.JFrame {
     public long auth_total;
     public long auth_space;
     public long auth_key;
-    public long THRESHOLD = (long) 0.10;
+    public long TOTAL_THRESHOLD = (long) 1; //IN SECONDS
+    public long SPACE_THRESHOLD = (long) 20; //IN MILLISECONDS
+    public long KEY_THRESHOLD = (long) 20; //IN MILLISECONDS
 
     //TRAINING PHASE VARIABLES
     boolean started = false;
@@ -51,7 +53,7 @@ public class Signature_Authenticator extends javax.swing.JFrame {
     LinkedList<Long> auth_total_time_store = new LinkedList<>();
     LinkedList<Long> auth_space_time_store = new LinkedList<>();
     LinkedList<Long> auth_key_time_store = new LinkedList<>();
-    static int AUTH_COUNT = 5;
+    static int AUTH_COUNT = 2;
     boolean authenticated = false;
 
     /**
@@ -293,7 +295,7 @@ public class Signature_Authenticator extends javax.swing.JFrame {
     private void start_btnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_start_btnMouseClicked
         type_here.grabFocus();
         progress.setValue(0);
-        progress.setMaximum(10);
+        progress.setMaximum(TRAINING_COUNT);
         progress.setMinimum(0);
         progress.setString("Trained: 0/10");
         type_here.setEnabled(true);
@@ -387,7 +389,7 @@ public class Signature_Authenticator extends javax.swing.JFrame {
     private void auth_startMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_auth_startMouseClicked
         auth_type.grabFocus();
         auth_progress.setValue(0);
-        auth_progress.setMaximum(2);
+        auth_progress.setMaximum(AUTH_COUNT);
         auth_progress.setMinimum(0);
         auth_progress.setString("Trial: 0/2");
         auth_type.setEnabled(true);
@@ -457,11 +459,19 @@ public class Signature_Authenticator extends javax.swing.JFrame {
 
             //IF AUTHENTICATION FINISHED
             if (auth_counter == AUTH_COUNT) {
+                long total_diff = Math.abs(train_total - auth_total);
+                long space_diff = Math.abs(train_space - auth_space);
+                long key_diff = Math.abs(train_key - auth_key);
+
+                System.out.println("Total Diff: " + total_diff);
+                System.out.println("Space Diff: " + space_diff);
+                System.out.println("Key Diff: " + key_diff);
+
                 auth_update_progress(auth_counter); //UPDATE progress_bar
                 auth_type.setEnabled(false); //DISABLE typing_area
                 auth_start.setEnabled(true);
                 System.out.println("END AUTHENTICATION");
-                if ((Math.abs(train_total - auth_total) <= THRESHOLD) && (Math.abs(train_space - auth_space) <= THRESHOLD) && (Math.abs(train_key - auth_key) <= THRESHOLD)) {
+                if ((total_diff <= TOTAL_THRESHOLD) && (space_diff <= SPACE_THRESHOLD) && (key_diff <= KEY_THRESHOLD)) {
                     authenticated = true;
                     auth_alert.setForeground(Color.GREEN);
                     auth_alert.setText("You Have Been Authenticated");
