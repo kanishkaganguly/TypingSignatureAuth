@@ -1,6 +1,5 @@
 package my_package;
 
-
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.LinkedList;
@@ -15,6 +14,15 @@ import java.util.LinkedList;
  * @author nightstalker
  */
 public class Signature_Authenticator extends javax.swing.JFrame {
+
+    //GLOBAL VARIABLES
+    public long train_total;
+    public long train_space;
+    public long train_key;
+    public long auth_total;
+    public long auth_space;
+    public long auth_key;
+    public long THRESHOLD = (long) 0.10;
 
     //TRAINING PHASE VARIABLES
     boolean started = false;
@@ -32,6 +40,20 @@ public class Signature_Authenticator extends javax.swing.JFrame {
     boolean trained = false;
 
     //AUTHENTICATION PHASE VARIABLES
+    boolean auth_started = false;
+    long auth_start_time = 0;
+    long auth_end_time = 0;
+    long auth_spaceStart_time = 0;
+    long auth_spaceEnd_time = 0;
+    long auth_keyStart_time = 0;
+    long auth_keyEnd_time = 0;
+    int auth_counter = 0;
+    LinkedList<Long> auth_total_time_store = new LinkedList<>();
+    LinkedList<Long> auth_space_time_store = new LinkedList<>();
+    LinkedList<Long> auth_key_time_store = new LinkedList<>();
+    static int AUTH_COUNT = 5;
+    boolean authenticated = false;
+
     /**
      * Creates new form main
      */
@@ -70,6 +92,7 @@ public class Signature_Authenticator extends javax.swing.JFrame {
         auth_show = new javax.swing.JButton();
 
         auth_frame.setTitle("Authentication");
+        auth_frame.setMinimumSize(new java.awt.Dimension(400, 310));
         auth_frame.setResizable(false);
 
         auth_label.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -84,12 +107,23 @@ public class Signature_Authenticator extends javax.swing.JFrame {
         auth_instructions.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         auth_instructions.setText("Please type above text here in your normal typing style");
 
+        auth_type.setEnabled(false);
+        auth_type.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                auth_typeKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                auth_typeKeyReleased(evt);
+            }
+        });
+
         auth_alert.setForeground(new java.awt.Color(255, 0, 0));
         auth_alert.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         auth_alert.setText("You Have Not Been Authenticated.");
         auth_alert.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         auth_retry.setText("Try Again");
+        auth_retry.setEnabled(false);
 
         auth_progress.setMaximum(2);
         auth_progress.setToolTipText("");
@@ -97,6 +131,11 @@ public class Signature_Authenticator extends javax.swing.JFrame {
         auth_progress.setStringPainted(true);
 
         auth_start.setText("Start Authentication");
+        auth_start.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                auth_startMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout auth_frameLayout = new javax.swing.GroupLayout(auth_frame.getContentPane());
         auth_frame.getContentPane().setLayout(auth_frameLayout);
@@ -340,9 +379,105 @@ public class Signature_Authenticator extends javax.swing.JFrame {
     private void auth_showMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_auth_showMouseClicked
         if (trained == true) {
             auth_frame.setVisible(true);
+        } else {
+            auth_frame.setVisible(true);
         }
     }//GEN-LAST:event_auth_showMouseClicked
 
+    private void auth_startMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_auth_startMouseClicked
+        auth_type.grabFocus();
+        auth_progress.setValue(0);
+        auth_progress.setMaximum(2);
+        auth_progress.setMinimum(0);
+        auth_progress.setString("Trial: 0/2");
+        auth_type.setEnabled(true);
+        auth_start.setEnabled(false);
+        auth_started = false;
+        auth_alert.setText("You Have Not Been Authenticated.");
+    }//GEN-LAST:event_auth_startMouseClicked
+
+    private void auth_typeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_auth_typeKeyPressed
+        //RESET AND START keypress_time
+        auth_keyStart_time = 0;
+        auth_keyEnd_time = 0;
+        auth_keyStart_time = System.currentTimeMillis();
+
+        //START TIMER WHEN STARTS TYPING
+        if ("".equals(auth_type.getText()) && false == auth_started) {
+            System.out.println("START AUTH TIMER");
+            System.out.println("START AUTH_SPACE TIMER");
+            auth_started = true;
+            auth_start_time = System.currentTimeMillis();
+            auth_spaceStart_time = System.currentTimeMillis();
+        }
+
+        //IF spacebar TYPED
+        if (evt.getKeyChar() == KeyEvent.VK_SPACE) {
+            auth_spaceEnd_time = System.currentTimeMillis(); //GET time_elapsed
+            System.out.println("END AUTH_SPACE TIMER");
+            auth_space_time(auth_spaceStart_time, auth_spaceEnd_time); //STORE + DISPLAY time_elapsed
+            auth_spaceStart_time = 0; //RESET spacebar_startTime
+            auth_spaceEnd_time = 0; //RESET spacebar_endTime
+            System.out.println("START AUTH_SPACE TIMER");
+            auth_spaceStart_time = System.currentTimeMillis(); //START space_time
+        }
+    }//GEN-LAST:event_auth_typeKeyPressed
+
+    private void auth_typeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_auth_typeKeyReleased
+        //GIVE FOCUS TO TYPING AREA
+        auth_type.grabFocus();
+
+        //GET CURRENT TEXT TYPED
+        String current_text = auth_text.getText();
+
+        //CHECK IF TEXT IS CORRECT
+        if (auth_text.getText().contains(current_text)) {
+
+            //GET + STORE keypress_time 
+            auth_keyEnd_time = System.currentTimeMillis();
+            auth_key_time(auth_keyStart_time, auth_keyEnd_time);
+
+            //SET NORMAL COLOR            
+            auth_type.setBackground(Color.WHITE);
+
+            //IF ENTIRE TEXT TYPED
+            if (current_text.equals(auth_text.getText())) {
+                auth_type.setText(""); //CLEAR TYPING AREA
+                auth_end_time = System.currentTimeMillis(); //GET total_time
+                auth_total_time(auth_start_time, auth_end_time); //STORE total_time
+                auth_started = false; //RESET start_var
+                auth_counter += 1; //UPDATE progress_counter
+                auth_update_progress(auth_counter); //UPDATE progress_bar
+                System.out.println("END AUTH LOOP");
+                auth_spaceStart_time = 0; //RESET spacebar_startTime
+                auth_spaceEnd_time = 0; //RESET spacebar_endTime
+                auth_start_time = 0; //RESET total_startTime
+                auth_end_time = 0; //RESET total_endTime
+            }
+
+            //IF TRAINING FINISHED
+            if (auth_counter == AUTH_COUNT) {
+                auth_update_progress(auth_counter); //UPDATE progress_bar
+                auth_type.setEnabled(false); //DISABLE typing_area
+                auth_start.setEnabled(true);
+                System.out.println("END AUTHENTICATION");
+                if ((Math.abs(train_total - auth_total) <= THRESHOLD) && (Math.abs(train_space - auth_space) < THRESHOLD) && (Math.abs(train_key - auth_key) < THRESHOLD)) {
+                    authenticated = true;
+                    auth_alert.setForeground(Color.GREEN);
+                    auth_alert.setText("You Have Been Authenticated");
+                } else {
+                    authenticated = false;
+                    auth_alert.setForeground(Color.RED);
+                    auth_alert.setText("You Have Not Been Authenticated");
+                }
+            }
+        } else {
+            //SHOW ERROR
+            auth_type.setBackground(Color.red);
+        }
+    }//GEN-LAST:event_auth_typeKeyReleased
+
+    /* BEGIN TRAINING FUNCTIONS */
     //DISPLAY spacebar_time AND STORE
     public void key_time(long start, long end) {
         long time = (end - start);
@@ -382,6 +517,7 @@ public class Signature_Authenticator extends javax.swing.JFrame {
         total_time.setText("Average Time Taken: " + avg + " s");
         System.out.println("Average Time Taken: " + avg + " s");
         System.out.println("");
+        train_total = avg;
     }
 
     //PRINT TIME STORED
@@ -396,6 +532,7 @@ public class Signature_Authenticator extends javax.swing.JFrame {
         key_time.setText("Average Keypress Time: " + avg + " ms");
         System.out.println("Average Keypress Time: " + avg + " ms");
         System.out.println("");
+        train_key = avg;
     }
 
     //PRINT spacebar TIME STORED
@@ -410,7 +547,81 @@ public class Signature_Authenticator extends javax.swing.JFrame {
         space_time.setText("Average Spacebar Time: " + avg + " ms");
         System.out.println("Average Spacebar Time: " + avg + " ms");
         System.out.println("");
+        train_space = avg;
     }
+
+    /* END TRAINING FUNCTIONS */
+    ////////////////////////////////////////////////////////////////////////////
+    /* BEGIN AUTHENTICATOR FUNCTIONS */
+    //DISPLAY spacebar_time AND STORE
+    public void auth_key_time(long start, long end) {
+        long time = (end - start);
+        auth_key_time_store.push(time);
+        auth_print_keyTime();
+    }
+
+    //DISPLAY spacebar_time AND STORE
+    public void auth_space_time(long start, long end) {
+        long time = (end - start);
+        auth_space_time_store.push(time);
+        auth_print_spaceTime();
+    }
+
+    //DISPLAY total_time AND STORE
+    public void auth_total_time(long start, long end) {
+        long time = (end - start) / 1000;
+        auth_total_time_store.push(time);
+        auth_print_time();
+    }
+
+    //UPDATE progress_bar
+    public void auth_update_progress(int n) {
+        auth_progress.setValue(n);
+        auth_progress.setString("Trial: " + n + "/10");
+    }
+
+    //PRINT TIME STORED
+    public void auth_print_time() {
+        long sum = 0;
+        long avg = 0;
+        System.out.println("** AUTH. AVG. TIME **");
+        for (int x = 0; x < auth_total_time_store.size(); x++) {
+            sum += auth_total_time_store.get(x);
+        }
+        avg = sum / auth_total_time_store.size();
+        System.out.println("Average Time Taken: " + avg + " s");
+        System.out.println("");
+        auth_total = avg;
+    }
+
+    //PRINT TIME STORED
+    public void auth_print_keyTime() {
+        long sum = 0;
+        long avg = 0;
+        System.out.println("== AUTH. AVG. KEY TIME ==");
+        for (int x = 0; x < auth_key_time_store.size(); x++) {
+            sum += auth_key_time_store.get(x);
+        }
+        avg = sum / auth_key_time_store.size();
+        System.out.println("Average Keypress Time: " + avg + " ms");
+        System.out.println("");
+        auth_key = avg;
+    }
+
+    //PRINT spacebar TIME STORED
+    public void auth_print_spaceTime() {
+        long sum = 0;
+        long avg = 0;
+        System.out.println("-- AUTH. SPACEBAR TIME --");
+        for (int x = 0; x < auth_space_time_store.size(); x++) {
+            sum += auth_space_time_store.get(x);
+        }
+        avg = sum / auth_space_time_store.size();
+        System.out.println("Average Spacebar Time: " + avg + " ms");
+        System.out.println("");
+        auth_space = avg;
+    }
+    /* END AUTHENTICATOR FUNCTIONS */
 
     /**
      * @param args the command line arguments

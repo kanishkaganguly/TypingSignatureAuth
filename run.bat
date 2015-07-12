@@ -1,1 +1,1 @@
-javaw -jar dist/keySignatureAuth.jar
+java -jar dist/keySignatureAuth.jar
