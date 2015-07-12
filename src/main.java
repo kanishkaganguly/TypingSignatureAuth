@@ -14,6 +14,7 @@ import java.util.LinkedList;
  */
 public class main extends javax.swing.JFrame {
 
+    //TRAINING PHASE VARIABLES
     boolean started = false;
     long start_time = 0;
     long end_time = 0;
@@ -26,7 +27,9 @@ public class main extends javax.swing.JFrame {
     LinkedList<Long> space_time_store = new LinkedList<>();
     LinkedList<Long> key_time_store = new LinkedList<>();
     static int TRAINING_COUNT = 10;
+    boolean trained = false;
 
+    //AUTHENTICATION PHASE VARIABLES
     /**
      * Creates new form main
      */
@@ -43,8 +46,18 @@ public class main extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        auth_frame = new javax.swing.JFrame();
+        auth_label = new javax.swing.JLabel();
+        auth_separator = new javax.swing.JSeparator();
+        auth_text = new javax.swing.JLabel();
+        auth_instructions = new javax.swing.JLabel();
+        auth_type = new javax.swing.JTextField();
+        auth_alert = new javax.swing.JLabel();
+        auth_retry = new javax.swing.JButton();
+        auth_progress = new javax.swing.JProgressBar();
+        auth_start = new javax.swing.JButton();
         title = new javax.swing.JLabel();
-        border = new javax.swing.JSeparator();
+        separator = new javax.swing.JSeparator();
         test_text = new javax.swing.JLabel();
         type_here = new javax.swing.JTextField();
         total_time = new javax.swing.JLabel();
@@ -52,8 +65,96 @@ public class main extends javax.swing.JFrame {
         progress = new javax.swing.JProgressBar();
         space_time = new javax.swing.JLabel();
         key_time = new javax.swing.JLabel();
+        auth_show = new javax.swing.JButton();
+
+        auth_frame.setTitle("Authentication");
+        auth_frame.setResizable(false);
+
+        auth_label.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        auth_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        auth_label.setText("Authentication Phase");
+
+        auth_text.setFont(new java.awt.Font("Tahoma", 2, 18)); // NOI18N
+        auth_text.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        auth_text.setText("The moon is made of cheese");
+        auth_text.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        auth_instructions.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        auth_instructions.setText("Please type above text here in your normal typing style");
+
+        auth_alert.setForeground(new java.awt.Color(255, 0, 0));
+        auth_alert.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        auth_alert.setText("You Have Not Been Authenticated.");
+        auth_alert.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        auth_retry.setText("Try Again");
+
+        auth_progress.setMaximum(2);
+        auth_progress.setToolTipText("");
+        auth_progress.setString("Trial: 0/2");
+        auth_progress.setStringPainted(true);
+
+        auth_start.setText("Start Authentication");
+
+        javax.swing.GroupLayout auth_frameLayout = new javax.swing.GroupLayout(auth_frame.getContentPane());
+        auth_frame.getContentPane().setLayout(auth_frameLayout);
+        auth_frameLayout.setHorizontalGroup(
+            auth_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(auth_separator)
+            .addGroup(auth_frameLayout.createSequentialGroup()
+                .addGroup(auth_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(auth_frameLayout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addComponent(auth_label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(auth_frameLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(auth_text, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(auth_frameLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(auth_instructions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(auth_frameLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(auth_type))
+                    .addGroup(auth_frameLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(auth_alert, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(auth_frameLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(auth_progress, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, auth_frameLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(auth_start, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(auth_retry, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        auth_frameLayout.setVerticalGroup(
+            auth_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(auth_frameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(auth_label)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(auth_separator, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(auth_text)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(auth_instructions)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(auth_type, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(auth_progress, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(auth_alert)
+                .addGap(18, 18, 18)
+                .addGroup(auth_frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(auth_retry)
+                    .addComponent(auth_start))
+                .addContainerGap())
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Typing Authentication");
+        setResizable(false);
 
         title.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         title.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -90,11 +191,19 @@ public class main extends javax.swing.JFrame {
 
         key_time.setText("Average Keypress Time:");
 
+        auth_show.setText("Authentication");
+        auth_show.setEnabled(false);
+        auth_show.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                auth_showMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(border)
+            .addComponent(separator)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -107,7 +216,8 @@ public class main extends javax.swing.JFrame {
                     .addComponent(space_time, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(key_time, javax.swing.GroupLayout.PREFERRED_SIZE, 366, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(auth_show, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -116,7 +226,7 @@ public class main extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(title)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(border, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(separator, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(test_text)
                 .addGap(18, 18, 18)
@@ -127,11 +237,13 @@ public class main extends javax.swing.JFrame {
                 .addComponent(space_time)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(key_time)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(start_btn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(progress, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(18, 18, 18)
+                .addComponent(auth_show)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -146,6 +258,7 @@ public class main extends javax.swing.JFrame {
         type_here.setEnabled(true);
         start_btn.setEnabled(false);
         started = false;
+        auth_show.setEnabled(false);
     }//GEN-LAST:event_start_btnMouseClicked
 
     private void type_hereKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_type_hereKeyReleased
@@ -186,6 +299,8 @@ public class main extends javax.swing.JFrame {
                 type_here.setEnabled(false); //DISABLE typing_area
                 start_btn.setEnabled(true);
                 System.out.println("END TRAINING");
+                auth_show.setEnabled(true);
+                trained = true;
             }
         } else {
             //SHOW ERROR
@@ -219,6 +334,12 @@ public class main extends javax.swing.JFrame {
             spaceStart_time = System.currentTimeMillis(); //START space_time
         }
     }//GEN-LAST:event_type_hereKeyPressed
+
+    private void auth_showMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_auth_showMouseClicked
+        if (trained == true) {
+            auth_frame.setVisible(true);
+        }
+    }//GEN-LAST:event_auth_showMouseClicked
 
     //DISPLAY spacebar_time AND STORE
     public void key_time(long start, long end) {
@@ -325,9 +446,20 @@ public class main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JSeparator border;
+    private javax.swing.JLabel auth_alert;
+    private javax.swing.JFrame auth_frame;
+    private javax.swing.JLabel auth_instructions;
+    private javax.swing.JLabel auth_label;
+    private javax.swing.JProgressBar auth_progress;
+    private javax.swing.JButton auth_retry;
+    private javax.swing.JSeparator auth_separator;
+    private javax.swing.JButton auth_show;
+    private javax.swing.JButton auth_start;
+    private javax.swing.JLabel auth_text;
+    private javax.swing.JTextField auth_type;
     private javax.swing.JLabel key_time;
     private javax.swing.JProgressBar progress;
+    private javax.swing.JSeparator separator;
     private javax.swing.JLabel space_time;
     private javax.swing.JButton start_btn;
     private javax.swing.JLabel test_text;
